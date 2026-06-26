@@ -22,6 +22,21 @@ public:
         a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
     }
 
+    // Custom constructor: creates an array with a specific initial capacity
+    DynamicArray(int customCapacity) {
+        a_capacity = customCapacity; // FIXED: Correctly initialize capacity
+        a_size = 0;
+        
+        // Allocate raw memory for a_capacity items
+        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+    }
+
+    // Destructor: cleans up the heap memory when the array goes out of scope
+    ~DynamicArray() {
+        // Free the raw memory block allocated by malloc
+        std::free(a_data);
+    }
+
     // Returns the number of items currently in the array
     int size() const {
         return a_size;

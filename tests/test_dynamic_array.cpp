@@ -51,11 +51,25 @@ void test_initial_state() {
     EXPECT_TRUE(arr.isEmpty(), "Array is empty initially");
 }
 
+void test_custom_capacity() {
+    std::cout << "\n--- Testing Custom Capacity Constructor ---\n";
+    
+    // Create an array with a specific capacity of 100
+    DynamicArray<int> arr(100);
+    
+    // Size should still be 0
+    EXPECT_EQ(0, arr.size(), "Custom capacity size is 0");
+    
+    // Capacity should be 100
+    EXPECT_EQ(100, arr.capacity(), "Custom capacity is 100");
+}
+
 int main() {
     std::cout << "Starting DynamicArray Tests...\n";
     
     // Run the tests
     test_initial_state();
+    test_custom_capacity();
     
     // Print Summary
     std::cout << "\n==============================\n";
