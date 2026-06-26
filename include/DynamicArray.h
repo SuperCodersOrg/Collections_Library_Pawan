@@ -266,17 +266,17 @@ public:
     }
 
     // Returns the number of items currently in the array
-    int size() const {
+    [[nodiscard]] int size() const {
         return a_size;
     }
 
-    // Returns the total capacity before a resize is needed
-    int capacity() const {
+    // Returns the maximum number of items the array can hold before resizing
+    [[nodiscard]] int capacity() const {
         return a_capacity;
     }
 
-    // Returns true if there are no items in the array
-    bool isEmpty() const {
+    // Checks if the array is empty
+    [[nodiscard]] bool isEmpty() const {
         return a_size == 0;
     }
 
