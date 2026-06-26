@@ -64,6 +64,47 @@ public:
         std::free(a_data);
     }
 
+    // --- Rule of Five: Copy Semantics ---
+
+    // Copy Constructor: Creates a deep copy of another array
+    DynamicArray(const DynamicArray& other) {
+        a_capacity = other.a_capacity;
+        a_size = other.a_size;
+        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        
+        // Deep copy the elements using placement new
+        for (int i = 0; i < a_size; ++i) {
+            new(&a_data[i]) T(other.a_data[i]);
+        }
+    }
+
+    // Copy Assignment Operator: Assigns one array to another (e.g., arr1 = arr2;)
+    DynamicArray& operator=(const DynamicArray& other) {
+        // FIXED: Check for self-assignment to prevent destroying our own data!
+        if (this == &other) {
+            return *this;
+        }
+
+        // Destroy current objects and free current memory
+        for (int i = 0; i < a_size; ++i) {
+            a_data[i].~T();
+        }
+        std::free(a_data);
+        
+        // Copy the new state
+        a_capacity = other.a_capacity;
+        a_size = other.a_size;
+        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        
+        // At this point, if it was self-assignment, other.a_data was just freed!
+        // We will be copying garbage or causing a segfault.
+        for (int i = 0; i < a_size; ++i) {
+            new(&a_data[i]) T(other.a_data[i]);
+        }
+        
+        return *this;
+    }
+
     // --- Modifiers ---
 
     // Appends an item to the end of the array, resizing if necessary

@@ -139,3 +139,20 @@ I realized I had written `std::free(a_data);` inside the `clear()` function. Thi
 
 **Outcome:**
 I removed `std::free(a_data)` and `a_data = nullptr` from `clear()`. It now simply loops to destroy the elements and sets `a_size = 0`. The tests now pass cleanly, and we officially reached **55 test cases**!
+
+---
+
+**Date:** June 26
+**Duration:** 50 minutes
+
+**Goal:**
+Implement Step 8 (Rule of Five): Implement the Copy Constructor and Copy Assignment Operator for deep copying.
+
+**Problem Encountered:**
+Double Free Corruption / Garbage Data on Self-Assignment. When I wrote a test case that assigned an array to itself (`arr = arr;`), the test failed catastrophically. The array was reading completely random garbage data (e.g. `Got: 7610112`).
+
+**What I Tried:**
+I analyzed my `operator=` logic. My assignment operator was designed to first delete its own data, and then copy the new data. However, during self-assignment, the "new data" IS the "old data"! By destroying its own elements and freeing `a_data` first, it was literally erasing the very data it was trying to copy from.
+
+**Outcome:**
+I added a simple self-assignment check (`if (this == &other) return *this;`) at the very top of `operator=`. This immediately solved the problem. The deep copy tests now pass, bringing our test count to 66!

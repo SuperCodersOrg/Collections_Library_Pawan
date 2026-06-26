@@ -222,6 +222,42 @@ void test_search_and_clear() {
     EXPECT_EQ(100, arr.get(0), "Element 0 is 100");
 }
 
+void test_copy_semantics() {
+    std::cout << "\n--- Testing Copy Semantics ---\n";
+    DynamicArray<int> original;
+    original.append(1);
+    original.append(2);
+    original.append(3);
+    
+    // Test Copy Constructor
+    DynamicArray<int> copyConstructed = original;
+    EXPECT_EQ(3, copyConstructed.size(), "Copy constructed size matches original");
+    EXPECT_EQ(1, copyConstructed[0], "Element 0 copied correctly");
+    EXPECT_EQ(3, copyConstructed[2], "Element 2 copied correctly");
+    
+    // Verify Deep Copy (modifying copy shouldn't affect original)
+    copyConstructed[0] = 99;
+    EXPECT_EQ(99, copyConstructed[0], "Copy element modified");
+    EXPECT_EQ(1, original[0], "Original element remained unaffected (Deep Copy verified)");
+    
+    // Test Copy Assignment Operator
+    DynamicArray<int> assigned;
+    assigned.append(999); // give it some dummy data to ensure it gets cleared
+    assigned = original;
+    EXPECT_EQ(3, assigned.size(), "Assigned array size matches original");
+    EXPECT_EQ(2, assigned[1], "Assigned element 1 is correct");
+    
+    // Verify Deep Copy for assignment
+    assigned[2] = 500;
+    EXPECT_EQ(500, assigned[2], "Assigned element modified");
+    EXPECT_EQ(3, original[2], "Original element remained unaffected");
+    
+    // Self-Assignment Test (This will trigger the bug!)
+    original = original;
+    EXPECT_EQ(3, original.size(), "Self-assigned array size is intact");
+    EXPECT_EQ(1, original[0], "Self-assigned array data is intact");
+}
+
 int main() {
     std::cout << "Starting DynamicArray Tests...\n";
     
@@ -233,6 +269,7 @@ int main() {
     test_insert();
     test_remove_and_pop();
     test_search_and_clear();
+    test_copy_semantics();
     
     // Print Summary
     std::cout << "\n==============================\n";
