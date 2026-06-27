@@ -117,8 +117,31 @@ void test_copy_semantics() {
     EXPECT_EQ(1, assigned.get(0), "Assigned list has correct elements");
 
     // Test Self-Assignment Bug!
-    assigned = assigned; // BUG WILL TRIGGER HERE!
+    assigned = assigned;
     EXPECT_EQ(3, assigned.getSize(), "Self-assigned list should keep its size");
+}
+
+void test_move_semantics() {
+    std::cout << "\n--- Testing Move Semantics ---\n";
+    LinkedList<int> original;
+    original.append(100);
+    original.append(200);
+
+    // Test Move Constructor
+    LinkedList<int> moved(std::move(original));
+    EXPECT_EQ(2, moved.getSize(), "Moved list has correct size");
+    EXPECT_EQ(200, moved.get(1), "Moved list has correct data");
+    
+    // The source (original) will now go out of scope and its destructor will fire!
+    // BUG: Since we didn't neutralize 'original', it will delete the nodes
+    // and 'moved' will now point to freed memory, causing a crash!
+
+    // Test Move Assignment
+    LinkedList<int> moved_assign;
+    LinkedList<int> temp;
+    temp.append(300);
+    moved_assign = std::move(temp);
+    EXPECT_EQ(1, moved_assign.getSize(), "Move assigned list has correct size");
 }
 
 int main() {
@@ -130,6 +153,7 @@ int main() {
     test_insert_and_remove();
     test_search();
     test_copy_semantics();
+    test_move_semantics();
     
     // Print Summary
     std::cout << "\n==============================\n";

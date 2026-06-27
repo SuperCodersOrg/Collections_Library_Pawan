@@ -35,7 +35,6 @@ public:
 
     // Copy Assignment Operator
     LinkedList& operator=(const LinkedList& other) {
-        // FIXED: Added self-assignment check to prevent erasing our own data
         if (this == &other) {
             return *this;
         }
@@ -45,6 +44,32 @@ public:
             append(current->data);
             current = current->next;
         }
+        return *this;
+    }
+
+    // Move Constructor
+    LinkedList(LinkedList&& other) noexcept : head(other.head), tail(other.tail), size(other.size) {
+        // FIXED: Neutralize the source object so it doesn't delete the nodes when it's destroyed!
+        other.head = nullptr;
+        other.tail = nullptr;
+        other.size = 0;
+    }
+
+    // Move Assignment Operator
+    LinkedList& operator=(LinkedList&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+        clear();
+        
+        head = other.head;
+        tail = other.tail;
+        size = other.size;
+        
+        // FIXED: Neutralize the source object
+        other.head = nullptr;
+        other.tail = nullptr;
+        other.size = 0;
         return *this;
     }
 

@@ -258,3 +258,20 @@ I analyzed `operator=`. The first thing it does is `clear()` the existing list s
 
 **Outcome:**
 I added a simple `if (this == &other) return *this;` at the beginning of the operator to prevent self-assignment destruction. The deep copy tests now pass, bringing us up to 21 test cases!
+
+---
+
+**Date:** June 27
+**Duration:** 35 minutes
+
+**Goal:**
+Implement Step 10b (LinkedList): Rule of Five Move Constructor and Move Assignment Operator to steal pointers.
+
+**Problem Encountered:**
+Use-After-Free OS Crash. The move operations worked to steal the pointers (`head`, `tail`), but when the test completed and destructed the temporary source object, the program completely froze/crashed.
+
+**What I Tried:**
+I traced the destructor of the temporary object. It was calling `clear()`, which faithfully iterated through the list and `delete`d every node. However, since I stole those nodes, my new list was now pointing to deallocated memory! 
+
+**Outcome:**
+I added `other.head = nullptr`, `other.tail = nullptr`, and `other.size = 0` to both move functions. This neutralizes the source object so its destructor does nothing. Tests pass! 24 test cases.
