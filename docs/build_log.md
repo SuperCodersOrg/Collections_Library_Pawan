@@ -343,3 +343,17 @@ Because the `HashMap` is composed of `DynamicArray<LinkedList<KeyValuePair>>`, a
 
 **Outcome:**
 I wrote tests explicitly verifying deep-copies and moves, and they passed on the first try. I also added a 50-element bulk operation stress test. The HashMap is fully functional with a grand total of **102 test cases** passing perfectly! Day 2 coding is officially done.
+
+---
+
+**Date:** June 27
+**Duration:** 15 minutes
+
+**Goal:**
+Implement Step 11 (HashMap): Utility methods `contains()`, `clear()`, and `operator[]`.
+
+**Problem Encountered:**
+No bugs! The `operator[]` was tricky because it needs to return a reference and optionally default-construct if the key doesn't exist, but using a `try-catch` block around `get(key)` made it elegant.
+
+**Outcome:**
+Added tests for the utilities, bringing our final HashMap test count to **111 test cases**. The HashMap implementation is robust, performs dynamic resizing accurately, and handles collisions beautifully via the LinkedList separate chaining mechanism. All Phase 2 tasks complete!

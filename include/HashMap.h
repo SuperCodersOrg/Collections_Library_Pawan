@@ -115,6 +115,15 @@ public:
         return false;
     }
 
+    V& operator[](const K& key) {
+        try {
+            return get(key);
+        } catch (const std::out_of_range&) {
+            put(key, V{}); // Default construct a new value
+            return get(key);
+        }
+    }
+
     void clear() {
         for (int i = 0; i < buckets.capacity(); ++i) {
             buckets.get(i).clear();

@@ -168,6 +168,21 @@ void test_contains_and_clear() {
     EXPECT_TRUE(!map.contains("X"), "Map does not contain X after clear");
 }
 
+void test_operator_brackets() {
+    std::cout << "\n--- Testing Operator[] ---\n";
+    HashMap<std::string, int> map;
+    
+    // Test insertion via operator[]
+    map["NewKey"] = 777;
+    EXPECT_EQ(1, map.size(), "Size is 1 after operator[] insertion");
+    EXPECT_EQ(777, map.get("NewKey"), "Value is correctly set via operator[]");
+    
+    // Test retrieval and update via operator[]
+    EXPECT_EQ(777, map["NewKey"], "Operator[] retrieves correct value");
+    map["NewKey"]++;
+    EXPECT_EQ(778, map["NewKey"], "Operator[] allows in-place mutation");
+}
+
 int main() {
     std::cout << "Starting HashMap Tests...\n";
     
@@ -179,6 +194,7 @@ int main() {
     test_rule_of_zero();
     test_bulk_operations();
     test_contains_and_clear();
+    test_operator_brackets();
     
     // Print Summary
     std::cout << "\n==============================\n";
