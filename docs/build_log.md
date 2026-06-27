@@ -309,3 +309,20 @@ I analyzed my `put` logic. I was hashing the key, finding the `LinkedList` bucke
 
 **Outcome:**
 Because our `LinkedList` now supports C++ iterators, I wrote a brilliant fix using `for (auto& pair : bucket)`. If the key matches, it updates the value in-place and returns early. The tests now pass, correctly avoiding duplicate insertions!
+
+---
+
+**Date:** June 27
+**Duration:** 55 minutes
+
+**Goal:**
+Implement Step 5-8 (HashMap): `get(key)`, `remove(key)`, and `resize()` (Dynamic Rehashing).
+
+**Problem Encountered:**
+Size Corruption / Artificial Inflation during Rehashing. When I tested inserting 13 elements (triggering the `0.75` load factor resize), the size of the HashMap suddenly jumped from 12 to 25!
+
+**What I Tried:**
+I examined the `resize()` logic. I was correctly creating a new `DynamicArray` with double capacity, but to move the old items over, I was re-using my own public `put()` method. The problem is, `put()` has `current_size++` inside it. So rehashing 12 old items artificially added 12 to the `current_size`!
+
+**Outcome:**
+I simply added `current_size = 0;` inside `resize()` right before the rehashing loop. Since we are conceptually starting with a fresh, empty buckets array, we must reset the size counter and let `put()` naturally increment it back up as it inserts the items. Tests pass perfectly, 16 test cases!
