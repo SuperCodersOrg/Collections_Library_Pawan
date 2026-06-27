@@ -190,3 +190,20 @@ I looked at my range constructor. I had simply written a loop: `for (auto it = f
 
 **Outcome:**
 I added the necessary initialization lines (`a_capacity = 4; a_size = 0; a_data = malloc(...)`) to the top of the range constructor before the loop. The range constructor and the C++ range-based for-loop (`for (int val : arr)`) now work perfectly. We are up to **79 test cases**!
+
+---
+
+**Date:** June 27
+**Duration:** 30 minutes
+
+**Goal:**
+Implement Step 1-2 (LinkedList): Skeleton, `prepend()`, and `append()`.
+
+**Problem Encountered:**
+Null Pointer Dereference (Segmentation Fault). When appending to an empty list, the list correctly set `head = newNode;`, but the next time I called `append()`, it crashed on `tail->next = newNode;`.
+
+**What I Tried:**
+I traced the state of the list. On the first append, I didn't update `tail`. Since `tail` was `nullptr`, the second append tried to dereference a null pointer.
+
+**Outcome:**
+Added `tail = newNode;` inside the `if (isEmpty())` block of `append()`. The tests successfully pass now without crashing.
