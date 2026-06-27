@@ -226,6 +226,33 @@ public:
         tail = nullptr;
         size = 0;
     }
+
+    // --- Iterators ---
+    class Iterator {
+    private:
+        Node* current;
+    public:
+        Iterator(Node* ptr) : current(ptr) {}
+        T& operator*() { return current->data; }
+        Iterator& operator++() {
+            current = current->next;
+            return *this;
+        }
+        bool operator!=(const Iterator& other) const {
+            return current != other.current;
+        }
+    };
+
+    Iterator begin() { return Iterator(head); }
+    Iterator end() { return Iterator(nullptr); }
+
+    // Range constructor
+    template <typename InputIt>
+    LinkedList(InputIt first, InputIt last) : head(nullptr), tail(nullptr), size(0) {
+        for (auto it = first; it != last; ++it) {
+            append(*it);
+        }
+    }
 };
 
 #endif // LINKED_LIST_H

@@ -275,3 +275,20 @@ I traced the destructor of the temporary object. It was calling `clear()`, which
 
 **Outcome:**
 I added `other.head = nullptr`, `other.tail = nullptr`, and `other.size = 0` to both move functions. This neutralizes the source object so its destructor does nothing. Tests pass! 24 test cases.
+
+---
+
+**Date:** June 27
+**Duration:** 30 minutes
+
+**Goal:**
+Implement Step 11 (LinkedList): Iterators, Range Constructor, and Stress Testing.
+
+**Problem Encountered:**
+No major bugs! The iterator implementation (`operator*`, `operator++`, `operator!=`) went smoothly, allowing C++ range-based for-loops (`for (int val : list)`) to work natively.
+
+**What I Tried:**
+I wrote a stress test inserting 50 items and verified that `size()`, `get()`, `contains()`, and `indexOf()` scale correctly without crashing.
+
+**Outcome:**
+The LinkedList is officially complete! We hit **82 test cases**, proving its robust memory management and logic. Moving on to Phase 2: HashMap.

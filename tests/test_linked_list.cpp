@@ -144,6 +144,41 @@ void test_move_semantics() {
     EXPECT_EQ(1, moved_assign.getSize(), "Move assigned list has correct size");
 }
 
+void test_iterators() {
+    std::cout << "\n--- Testing Iterators & Range Constructor ---\n";
+    LinkedList<int> list;
+    list.append(5);
+    list.append(10);
+    list.append(15);
+
+    int sum = 0;
+    for (int val : list) {
+        sum += val;
+    }
+    EXPECT_EQ(30, sum, "Range-based for loop correctly iterates");
+
+    LinkedList<int> fromRange(list.begin(), list.end());
+    EXPECT_EQ(3, fromRange.getSize(), "Range constructor created correct size list");
+    EXPECT_EQ(10, fromRange.get(1), "Range constructor copied data correctly");
+}
+
+void test_bulk_operations() {
+    std::cout << "\n--- Testing Bulk Operations (Stress Test) ---\n";
+    LinkedList<int> bulk;
+    for (int i = 0; i < 50; ++i) {
+        bulk.append(i * 10);
+        EXPECT_EQ(i + 1, bulk.getSize(), "Bulk append size check");
+    }
+    
+    EXPECT_EQ(490, bulk.get(49), "Last element of bulk is correct");
+    EXPECT_TRUE(bulk.contains(250), "Bulk contains 250");
+    EXPECT_EQ(25, bulk.indexOf(250), "Index of 250 is correct");
+
+    bulk.clear();
+    EXPECT_EQ(0, bulk.getSize(), "Size is 0 after bulk clear");
+    EXPECT_TRUE(bulk.isEmpty(), "List is empty after bulk clear");
+}
+
 int main() {
     std::cout << "Starting LinkedList Tests...\n";
     
@@ -154,6 +189,8 @@ int main() {
     test_search();
     test_copy_semantics();
     test_move_semantics();
+    test_iterators();
+    test_bulk_operations();
     
     // Print Summary
     std::cout << "\n==============================\n";
