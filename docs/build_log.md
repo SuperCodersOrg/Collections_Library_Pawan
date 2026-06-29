@@ -357,3 +357,30 @@ No bugs! The `operator[]` was tricky because it needs to return a reference and 
 
 **Outcome:**
 Added tests for the utilities, bringing our final HashMap test count to **111 test cases**. The HashMap implementation is robust, performs dynamic resizing accurately, and handles collisions beautifully via the LinkedList separate chaining mechanism. All Phase 2 tasks complete!
+
+---
+
+**Date:** June 29
+**Duration:** 1 hour 20 minutes
+
+**Goal:**
+Day 3 — Full Code Audit: Fix Bugs #1 through #5 discovered during a comprehensive code review of all three data structures.
+
+**Problem Encountered:**
+Bug #1 & #2 (DynamicArray): Every `malloc` call in the entire project was unchecked. If the OS ran out of memory, the program would silently dereference `nullptr` and crash. Additionally, `DynamicArray(0)` and `DynamicArray(-5)` were silently accepted, causing `malloc(0)` (implementation-defined) or `malloc` with a massive unsigned value, both leading to undefined behavior on the very next `append()`.
+
+Bug #3 (HashMap): `std::hash` returns `size_t` (64-bit unsigned), but we stored the result in `int` (32-bit signed). Large hash values get truncated to negative numbers, and `negative % capacity` produces a negative index, causing `buckets.get(-7)` to throw `out_of_range`. This bug appeared randomly depending on key values.
+
+Bug #4 (LinkedList): `get()`, `contains()`, `indexOf()`, and the iterators were not `const`-qualified. Any code accepting a `const LinkedList&` would fail to compile.
+
+Bug #5 (HashMap): Same const-correctness issue — `get()` and `contains()` were not `const`-qualified, making `const HashMap&` parameters useless.
+
+**What I Tried:**
+For Bug #1 & #2: I created a centralized `safe_malloc()` helper that checks for `nullptr` and throws `std::bad_alloc`. I also added an `if (customCapacity <= 0)` guard that throws `std::invalid_argument`. All 6 `malloc` call sites now use the helper.
+
+For Bug #3: I changed the hash function to perform the modulo operation in `size_t` arithmetic before casting to `int`: `static_cast<int>(hasher(key) % static_cast<size_t>(buckets.capacity()))`.
+
+For Bug #4 & #5: I added `const` overloads of `get()`, `contains()`, `indexOf()`, and a full `ConstIterator` class with const `begin()`/`end()` methods to LinkedList. For HashMap, I added const overloads of `get()` and `contains()`.
+
+**Outcome:**
+I wrote dedicated test cases for each bug before fixing them. The DynamicArray tests went from 81/83 to 83/83. The LinkedList tests went from "won't compile" to 89/89. The HashMap tests went from "won't compile" to 219/219. All three test suites pass perfectly. Total test count across the project: **391 test cases**.

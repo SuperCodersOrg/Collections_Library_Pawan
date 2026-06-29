@@ -13,10 +13,19 @@ private:
     int a_size;     // How many items are actually currently stored
     int a_capacity; // Total number of memory slots allocated before we need to resize
 
+    // Private helper: allocates memory and checks for failure
+    static T* safe_malloc(int capacity) {
+        T* ptr = static_cast<T*>(std::malloc(capacity * sizeof(T)));
+        if (ptr == nullptr) {
+            throw std::bad_alloc();
+        }
+        return ptr;
+    }
+
     // Private helper: doubles the capacity and moves elements to a new memory block
     void resize() {
         a_capacity *= 2;
-        T* new_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        T* new_data = safe_malloc(a_capacity);
         
         // Move existing elements to the new block
         for (int i = 0; i < a_size; ++i) {
@@ -42,16 +51,19 @@ public:
         // Allocate raw memory for 4 items on the heap.
         // We use malloc instead of 'new T[]' because we only want memory slots,
         // we do NOT want to construct default objects in those slots yet.
-        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        a_data = safe_malloc(a_capacity);
     }
 
     // Custom constructor: creates an array with a specific initial capacity
     DynamicArray(int customCapacity) {
-        a_capacity = customCapacity; // FIXED: Correctly initialize capacity
+        if (customCapacity <= 0) {
+            throw std::invalid_argument("DynamicArray capacity must be positive");
+        }
+        a_capacity = customCapacity;
         a_size = 0;
         
         // Allocate raw memory for a_capacity items
-        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        a_data = safe_malloc(a_capacity);
     }
 
     // Range-based constructor: creates an array from a range of iterators
@@ -60,7 +72,7 @@ public:
         // FIXED: Must initialize the array state before we can append to it!
         a_capacity = 4;
         a_size = 0;
-        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        a_data = safe_malloc(a_capacity);
 
         for (auto it = first; it != last; ++it) {
             append(*it);
@@ -83,7 +95,7 @@ public:
     DynamicArray(const DynamicArray& other) {
         a_capacity = other.a_capacity;
         a_size = other.a_size;
-        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        a_data = safe_malloc(a_capacity);
         
         // Deep copy the elements using placement new
         for (int i = 0; i < a_size; ++i) {
@@ -107,7 +119,7 @@ public:
         // Copy the new state
         a_capacity = other.a_capacity;
         a_size = other.a_size;
-        a_data = static_cast<T*>(std::malloc(a_capacity * sizeof(T)));
+        a_data = safe_malloc(a_capacity);
         
         // Deep copy the elements using placement new
         for (int i = 0; i < a_size; ++i) {

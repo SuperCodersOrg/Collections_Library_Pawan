@@ -145,6 +145,17 @@ public:
         return current->data;
     }
 
+    const T& get(int index) const {
+        if (index < 0 || index >= size) {
+            throw std::out_of_range("Index out of bounds");
+        }
+        Node* current = head;
+        for (int i = 0; i < index; ++i) {
+            current = current->next;
+        }
+        return current->data;
+    }
+
     void removeFirst() {
         if (isEmpty()) throw std::out_of_range("List is empty");
         Node* temp = head;
@@ -197,11 +208,11 @@ public:
         size--;
     }
 
-    bool contains(const T& val) {
+    bool contains(const T& val) const {
         return indexOf(val) != -1;
     }
 
-    int indexOf(const T& val) {
+    int indexOf(const T& val) const {
         Node* current = head;
         int index = 0;
         while (current != nullptr) {
@@ -243,8 +254,25 @@ public:
         }
     };
 
+    class ConstIterator {
+    private:
+        const Node* current;
+    public:
+        ConstIterator(const Node* ptr) : current(ptr) {}
+        const T& operator*() const { return current->data; }
+        ConstIterator& operator++() {
+            current = current->next;
+            return *this;
+        }
+        bool operator!=(const ConstIterator& other) const {
+            return current != other.current;
+        }
+    };
+
     Iterator begin() { return Iterator(head); }
     Iterator end() { return Iterator(nullptr); }
+    ConstIterator begin() const { return ConstIterator(head); }
+    ConstIterator end() const { return ConstIterator(nullptr); }
 
     // Range constructor
     template <typename InputIt>

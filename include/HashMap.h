@@ -22,8 +22,8 @@ private:
     // Hash function
     int hash(const K& key) const {
         std::hash<K> hasher;
-        // Basic modulo hashing
-        return hasher(key) % buckets.capacity();
+        // Use size_t arithmetic to avoid negative values from signed truncation
+        return static_cast<int>(hasher(key) % static_cast<size_t>(buckets.capacity()));
     }
 
 public:
@@ -90,6 +90,18 @@ public:
         throw std::out_of_range("Key not found in map");
     }
 
+    const V& get(const K& key) const {
+        int index = hash(key);
+        const LinkedList<KeyValuePair>& bucket = buckets.get(index);
+        
+        for (const auto& pair : bucket) {
+            if (pair.key == key) {
+                return pair.value;
+            }
+        }
+        throw std::out_of_range("Key not found in map");
+    }
+
     void remove(const K& key) {
         int index = hash(key);
         LinkedList<KeyValuePair>& bucket = buckets.get(index);
@@ -106,10 +118,10 @@ public:
         // If not found, do nothing
     }
 
-    bool contains(const K& key) {
+    bool contains(const K& key) const {
         int index = hash(key);
-        LinkedList<KeyValuePair>& bucket = buckets.get(index);
-        for (auto& pair : bucket) {
+        const LinkedList<KeyValuePair>& bucket = buckets.get(index);
+        for (const auto& pair : bucket) {
             if (pair.key == key) return true;
         }
         return false;
