@@ -235,6 +235,32 @@ void test_const_correctness() {
     EXPECT_TRUE(!cref.contains("Z"), "Const contains returns false for missing");
 }
 
+void test_get_keys_and_values() {
+    std::cout << "\n--- Testing getKeys & getValues ---\n";
+    HashMap<std::string, int> map;
+    map.put("One", 1);
+    map.put("Two", 2);
+    map.put("Three", 3);
+
+    DynamicArray<std::string> keys = map.getKeys();
+    DynamicArray<int> values = map.getValues();
+
+    EXPECT_EQ(3, keys.size(), "Keys array has correct size");
+    EXPECT_EQ(3, values.size(), "Values array has correct size");
+
+    bool hasOne = keys.contains("One");
+    bool hasTwo = keys.contains("Two");
+    bool hasThree = keys.contains("Three");
+
+    EXPECT_TRUE(hasOne && hasTwo && hasThree, "Keys array contains all keys");
+
+    bool has1 = values.contains(1);
+    bool has2 = values.contains(2);
+    bool has3 = values.contains(3);
+
+    EXPECT_TRUE(has1 && has2 && has3, "Values array contains all values");
+}
+
 int main() {
     std::cout << "Starting HashMap Tests...\n";
     
@@ -249,6 +275,7 @@ int main() {
     test_operator_brackets();
     test_negative_hash();
     test_const_correctness();
+    test_get_keys_and_values();
     
     // Print Summary
     std::cout << "\n==============================\n";

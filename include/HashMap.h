@@ -155,6 +155,26 @@ public:
         }
         current_size = 0;
     }
+
+    DynamicArray<K> getKeys() const {
+        DynamicArray<K> keys(current_size > 0 ? current_size : 4);
+        for (int i = 0; i < buckets.capacity(); ++i) {
+            for (const auto& pair : buckets.get(i)) {
+                keys.append(pair.key);
+            }
+        }
+        return keys;
+    }
+
+    DynamicArray<V> getValues() const {
+        DynamicArray<V> values(current_size > 0 ? current_size : 4);
+        for (int i = 0; i < buckets.capacity(); ++i) {
+            for (const auto& pair : buckets.get(i)) {
+                values.append(pair.value);
+            }
+        }
+        return values;
+    }
 };
 
 #endif // HASH_MAP_H
