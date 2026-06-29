@@ -116,12 +116,25 @@ public:
     }
 
     V& operator[](const K& key) {
-        try {
-            return get(key);
-        } catch (const std::out_of_range&) {
-            put(key, V{}); // Default construct a new value
-            return get(key);
+        if (current_size >= buckets.capacity() * 0.75) {
+            resize();
         }
+
+        int index = hash(key);
+        LinkedList<KeyValuePair>& bucket = buckets.get(index);
+        
+        for (auto& pair : bucket) {
+            if (pair.key == key) {
+                return pair.value;
+            }
+        }
+        
+        // Key not found, insert a default constructed value
+        bucket.append(KeyValuePair(key, V{}));
+        current_size++;
+        
+        // Return reference to the newly appended value at the end of the bucket
+        return bucket.get(bucket.getSize() - 1).value;
     }
 
     void clear() {
