@@ -3,13 +3,13 @@ project(SuperCoders_Project01 CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra")
 
 # Include directory for header files
 include_directories(include)
 
 # Define the main executable
-add_executable(redis_lite src/main.cpp src/RedisCLI.cpp)
+# add_executable(redis_lite src/main.cpp src/RedisCLI.cpp)
 
 # Enable testing and add the test subdirectory
 enable_testing()

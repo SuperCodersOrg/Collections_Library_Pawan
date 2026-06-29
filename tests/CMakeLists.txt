@@ -1,7 +1,7 @@
 # Add test executables
 add_executable(test_dynamic_array test_dynamic_array.cpp)
 add_executable(test_linked_list test_linked_list.cpp)
-add_executable(test_hashmap test_hashmap.cpp)
+add_executable(test_hashmap test_hash_map.cpp)
 
 # Register tests with CTest
 add_test(NAME DynamicArrayTest COMMAND test_dynamic_array)
