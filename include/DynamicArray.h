@@ -179,6 +179,14 @@ public:
         a_size++;
     }
 
+    void append(T&& value) {
+        if (a_size == a_capacity) {
+            resize();
+        }
+        new(&a_data[a_size]) T(std::move(value));
+        a_size++;
+    }
+
     // Inserts an item at a specific index, shifting subsequent elements to the right
     void insert(int index, const T& value) {
         if (index < 0 || index > a_size) {
