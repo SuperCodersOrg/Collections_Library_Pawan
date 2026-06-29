@@ -183,6 +183,58 @@ void test_operator_brackets() {
     EXPECT_EQ(778, map["NewKey"], "Operator[] allows in-place mutation");
 }
 
+// Bug #3: HashMap::hash() can produce negative indices due to size_t → int truncation
+void test_negative_hash() {
+    std::cout << "\n--- Testing Negative Hash Index (Bug #3) ---\n";
+    HashMap<std::string, int> map;
+
+    // These strings will produce large std::hash values that may truncate
+    // to negative int values before the modulo operation
+    bool no_crash = true;
+    try {
+        // Insert many varied keys to increase the chance of hitting a negative hash
+        for (int i = 0; i < 100; ++i) {
+            std::string key = "stress_key_" + std::to_string(i * 7919); // Use a prime multiplier
+            map.put(key, i);
+        }
+        EXPECT_EQ(100, map.size(), "All 100 stress keys inserted without crash");
+        
+        // Verify we can retrieve them
+        for (int i = 0; i < 100; ++i) {
+            std::string key = "stress_key_" + std::to_string(i * 7919);
+            EXPECT_EQ(i, map.get(key), "Stress key retrieval correct");
+        }
+    } catch (const std::out_of_range& e) {
+        no_crash = false;
+        std::cout << "[FAIL] HashMap crashed with out_of_range: " << e.what() << "\n";
+        tests_total++;
+    } catch (...) {
+        no_crash = false;
+        std::cout << "[FAIL] HashMap crashed with unknown exception\n";
+        tests_total++;
+    }
+    EXPECT_TRUE(no_crash, "No crash from negative hash indices");
+}
+
+// Bug #5: HashMap should be usable through const references
+void test_const_correctness() {
+    std::cout << "\n--- Testing Const Correctness (Bug #5) ---\n";
+    HashMap<std::string, int> map;
+    map.put("X", 100);
+    map.put("Y", 200);
+
+    // Pass by const reference — read methods should compile and work
+    const HashMap<std::string, int>& cref = map;
+    EXPECT_EQ(2, cref.size(), "Const size works");
+    EXPECT_TRUE(!cref.isEmpty(), "Const isEmpty works");
+    EXPECT_EQ(16, cref.getCapacity(), "Const getCapacity works");
+
+    // These must compile on a const reference
+    EXPECT_EQ(100, cref.get("X"), "Const get works");
+    EXPECT_TRUE(cref.contains("X"), "Const contains works");
+    EXPECT_TRUE(!cref.contains("Z"), "Const contains returns false for missing");
+}
+
 int main() {
     std::cout << "Starting HashMap Tests...\n";
     
@@ -195,6 +247,8 @@ int main() {
     test_bulk_operations();
     test_contains_and_clear();
     test_operator_brackets();
+    test_negative_hash();
+    test_const_correctness();
     
     // Print Summary
     std::cout << "\n==============================\n";

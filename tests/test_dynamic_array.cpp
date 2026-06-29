@@ -317,6 +317,39 @@ void test_iterators() {
     EXPECT_EQ(30, fromRange[2], "Range constructed element 2 is 30");
 }
 
+// Bug #1: Validate that DynamicArray constructor rejects invalid capacity
+void test_invalid_capacity() {
+    std::cout << "\n--- Testing Invalid Capacity (Bug #2) ---\n";
+
+    // Test zero capacity — should throw instead of creating a broken array
+    bool threw_zero = false;
+    try {
+        DynamicArray<int> zero_cap(0);
+    } catch (const std::invalid_argument&) {
+        threw_zero = true;
+    }
+    EXPECT_TRUE(threw_zero, "DynamicArray(0) throws invalid_argument");
+
+    // Test negative capacity — should throw instead of causing malloc to explode
+    bool threw_neg = false;
+    try {
+        DynamicArray<int> neg_cap(-5);
+    } catch (const std::invalid_argument&) {
+        threw_neg = true;
+    }
+    EXPECT_TRUE(threw_neg, "DynamicArray(-5) throws invalid_argument");
+
+    // Positive capacity should still work fine
+    bool no_throw = true;
+    try {
+        DynamicArray<int> good_cap(8);
+        EXPECT_EQ(8, good_cap.capacity(), "DynamicArray(8) has correct capacity");
+    } catch (...) {
+        no_throw = false;
+    }
+    EXPECT_TRUE(no_throw, "DynamicArray(8) does not throw");
+}
+
 int main() {
     std::cout << "Starting DynamicArray Tests...\n";
     
@@ -331,6 +364,7 @@ int main() {
     test_copy_semantics();
     test_move_semantics();
     test_iterators();
+    test_invalid_capacity();
     
     // Print Summary
     std::cout << "\n==============================\n";

@@ -179,6 +179,33 @@ void test_bulk_operations() {
     EXPECT_TRUE(bulk.isEmpty(), "List is empty after bulk clear");
 }
 
+// Bug #4: LinkedList should be usable through const references
+void test_const_correctness() {
+    std::cout << "\n--- Testing Const Correctness (Bug #4) ---\n";
+    LinkedList<int> list;
+    list.append(10);
+    list.append(20);
+    list.append(30);
+
+    // Pass by const reference — all read methods should compile and work
+    const LinkedList<int>& cref = list;
+    EXPECT_EQ(3, cref.getSize(), "Const getSize works");
+    EXPECT_TRUE(!cref.isEmpty(), "Const isEmpty works");
+
+    // These must compile on a const reference
+    EXPECT_EQ(20, cref.get(1), "Const get works");
+    EXPECT_TRUE(cref.contains(20), "Const contains works");
+    EXPECT_EQ(2, cref.indexOf(30), "Const indexOf works");
+    EXPECT_EQ(-1, cref.indexOf(999), "Const indexOf returns -1 for missing");
+
+    // Const iteration via range-based for
+    int sum = 0;
+    for (const int& val : cref) {
+        sum += val;
+    }
+    EXPECT_EQ(60, sum, "Const range-based for loop works");
+}
+
 int main() {
     std::cout << "Starting LinkedList Tests...\n";
     
@@ -191,6 +218,7 @@ int main() {
     test_move_semantics();
     test_iterators();
     test_bulk_operations();
+    test_const_correctness();
     
     // Print Summary
     std::cout << "\n==============================\n";
