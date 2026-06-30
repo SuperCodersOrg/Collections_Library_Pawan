@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra")
 include_directories(include)
 
 # Define the main executable
-# add_executable(redis_lite src/main.cpp src/RedisCLI.cpp)
+add_executable(redis_lite src/main.cpp src/RedisCLI.cpp)
 
 # Enable testing and add the test subdirectory
 enable_testing()

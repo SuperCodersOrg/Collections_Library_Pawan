@@ -384,3 +384,20 @@ For Bug #4 & #5: I added `const` overloads of `get()`, `contains()`, `indexOf()`
 
 **Outcome:**
 I wrote dedicated test cases for each bug before fixing them. The DynamicArray tests went from 81/83 to 83/83. The LinkedList tests went from "won't compile" to 89/89. The HashMap tests went from "won't compile" to 219/219. All three test suites pass perfectly. Total test count across the project: **391 test cases**.
+
+---
+
+**Date:** June 30
+**Duration:** 1 hour
+
+**Goal:**
+Implement the Redis CLI interface (SET, GET, DEL, EXISTS, COUNT, CLEAR, EXIT) backed by the custom HashMap, and wire it up to a `main` function.
+
+**Problem Encountered:**
+The initial implementation used a dedicated `exit()` method. However, `EXIT` is a control command for the Read-Evaluate loop, not a HashMap operation, so a dedicated handler is conceptually incorrect. Furthermore, building `RedisCLI.cpp` manually with `g++` resulted in a fatal `RedisCLI.h: No such file or directory` error because the include paths weren't specified.
+
+**What I Tried:**
+I removed the `exit()` method from the `RedisCLI` class and replaced it with a `run()` method containing a `while (true)` Read-Evaluate-Print Loop (REPL). I parsed standard input inside this loop, breaking naturally when encountering the `EXIT` command. To fix the compilation issue, I created a `src/main.cpp` entry point, uncommented the `redis_lite` target in `CMakeLists.txt`, and built the CLI natively using CMake.
+
+**Outcome:**
+The project now compiles seamlessly into a standalone `redis_lite.exe` on Windows. The CLI handles commands interactively and gracefully terminates on `EXIT` without relying on a disconnected handler method.
