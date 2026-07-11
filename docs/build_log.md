@@ -401,3 +401,22 @@ I removed the `exit()` method from the `RedisCLI` class and replaced it with a `
 
 **Outcome:**
 The project now compiles seamlessly into a standalone `redis_lite.exe` on Windows. The CLI handles commands interactively and gracefully terminates on `EXIT` without relying on a disconnected handler method.
+
+---
+
+**Date:** July 11
+**Duration:** 1 hour 30 minutes
+
+**Goal:**
+Migrate all custom testing frameworks in `test_dynamic_array.cpp`, `test_linked_list.cpp`, and `test_hash_map.cpp` to use Google Test (`gtest`) to conform to standard testing practices.
+
+**Problem Encountered:**
+1. **Compilation Errors in Migration:** After manually removing the custom framework headers and `EXPECT_EQ`/`EXPECT_TRUE` definitions, compiling with `cmake --build .` threw `expected constructor before '(' token`. The `#include <gtest/gtest.h>` directive was missing at the top of `test_hash_map.cpp` and `test_linked_list.cpp`.
+2. **Dangling Else Blocks:** While refactoring the `main()` function out (since `gtest_main` provides it), I accidentally left half of the failure-checking `else` block (`else { return 1; } }`) floating at the bottom of the files, resulting in `expected unqualified-id before 'else'`.
+3. **Undeclared Scope Errors:** In `test_hash_map.cpp`, the `HashMapTest_negative_hash_Test` threw an error stating `'tests_total' was not declared in this scope`. This happened because I had previously manually incremented `tests_total++` inside a `catch` block to handle exceptions, and I forgot to remove it when switching to GTest.
+
+**What I Tried:**
+I went back through the test files and carefully cleaned up the manual migrations. I added `#include <gtest/gtest.h>`, deleted the dangling `else` blocks, and completely removed the manual `tests_total++` increments since Google Test handles failure tracking natively (if an exception occurs, the subsequent `EXPECT_TRUE` will simply fail). I then configured `CMakeLists.txt` to require GTest and linked it via `target_link_libraries`.
+
+**Outcome:**
+All three test files successfully compile against Google Test! Running `ctest -V` now shows a beautifully structured, standard Google Test output. All data structures pass 100% of their test suites. Project 1 is fully tested and verified.

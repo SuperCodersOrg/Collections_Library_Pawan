@@ -13,4 +13,5 @@ add_executable(redis_lite src/main.cpp src/RedisCLI.cpp)
 
 # Enable testing and add the test subdirectory
 enable_testing()
+find_package(GTest REQUIRED)
 add_subdirectory(tests)
